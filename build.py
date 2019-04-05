@@ -16,6 +16,12 @@ from PIL import Image
 # t_width = int(subprocess.check_output(['tput', 'cols']))
 # t_height = int(subprocess.check_output(['tput', 'lines']))
 
+# DEFINES
+
+OPACITY_TOLERANCE = 128
+
+# CODE
+
 infile = sys.argv[1]
 
 im = Image.open(infile)
@@ -45,14 +51,14 @@ for y in range(1, height, 2):
         skip = 0
 
         r, g, b, a = im.getpixel((x, y - 1))
-        if a <= 128:
+        if a <= OPACITY_TOLERANCE:
             skip += 1
             background = "\033[49m"
         else:
             background = "\033[48;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m"
 
         r, g, b, a = im.getpixel((x, y))
-        if a <= 128:
+        if a <= OPACITY_TOLERANCE:
             skip += 1
             foreground = "\033[39m"
         else:
