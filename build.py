@@ -22,9 +22,16 @@ OPACITY_TOLERANCE = 128
 
 # CODE
 
+if len(sys.argv)<2:
+    print("build.py c.png 200 200")
+    exit(0)
+
 infile = sys.argv[1]
 
 im = Image.open(infile)
+
+if infile.lower().endswith(".gif"):
+    im = im.convert('RGBA')
 
 width, height = im.size
 
@@ -38,8 +45,8 @@ if (len(sys.argv) == 3):
     height = t_height
 
 if (len(sys.argv) == 4):
-    t_width = int(sys.argv[2])
-    t_height = int(sys.argv[3])
+    t_width = min(width, int(sys.argv[2]))
+    t_height = min(height, int(sys.argv[3]))
     im.thumbnail([t_width, t_height], Image.ANTIALIAS)
     width = t_width
     height = t_height
@@ -50,7 +57,16 @@ for y in range(1, height, 2):
     for x in range(0, width):
         skip = 0
 
-        r, g, b, a = im.getpixel((x, y - 1))
+        layers = im.getpixel((x, y-1))
+        #print(layers)
+        if len(layers)==4:
+            r,g,b,a = layers
+        else:
+            r,g,b = layers
+            a = 1
+
+
+        #r, g, b, a = im.getpixel((x, y - 1))
         if a <= OPACITY_TOLERANCE:
             skip += 1
             background = "\033[49m"
